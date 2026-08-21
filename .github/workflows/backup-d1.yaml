@@ -1,0 +1,43 @@
+name: Backup D1 Database
+permissions:
+    contents: read
+
+on:
+  schedule:
+    - cron: '0 2 * * *'  # Daily at 02:00 UTC
+  workflow_dispatch:
+
+jobs:
+  backup:
+    name: Dump D1 to artifact
+    runs-on: ubuntu-latest
+    env:
+      WRANGLER_VERSION: "4.82.1"
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
+        with:
+          node-version: "24"
+
+      - name: Dump D1 database
+        run: |
+          set -euo pipefail
+          WRANGLER="npx --yes wrangler@${WRANGLER_VERSION}"
+          mkdir -p backups
+          DATE="$(date -u +%Y%m%d-%H%M%S)"
+          OUT="backups/orangevault-${DATE}.sql"
+          $WRANGLER d1 export orangevault --remote --output "${OUT}"
+          echo "Dumped to ${OUT}"
+          ls -lh backups/
+
+      - name: Upload backup artifact
+        uses: actions/upload-artifact@50769540e7f4bd5e21e526ee35c689e35e0d6874 # v4.4.0
+        with:
+          name: orangevault-d1-backup
+          path: backups/*.sql
+          retention-days: 14
