@@ -8,15 +8,11 @@ command = "cargo install -q worker-build@^0.8 && worker-build --release"
 [[d1_databases]]
 binding = "DB"
 database_name = "orangevault"
-database_id = "844a51fd-229d-4e2b-8fb1-a4f37bd17c22"
-
-[[r2_buckets]]
-binding = "FILES"
-bucket_name = "orangevault-files"
+database_id = "cba08618-bb37-463d-b5d8-92afc2b6a771"
 
 [[kv_namespaces]]
 binding = "CACHE"
-id = "b71ded4c59084b2897cd3a5007946670"
+id = "1dded271423847d3a281cc9d26a6ef85"
 
 [durable_objects]
 bindings = [
@@ -47,11 +43,11 @@ new_sqlite_classes = ["UserNotifier"]
 
 [triggers]
 crons = [
-  "0 */6 * * *",   # Every 6 hours: purge expired sends + send files from R2
+  "0 */6 * * *",   # Every 6 hours: purge expired sends
   "0 0 * * *",     # Daily: purge trashed ciphers (soft-deleted 30+ days ago)
 ]
 
 [vars]
-DOMAIN = "https://vault.example.com"
+DOMAIN = "https://orange.zapnet.my.id"
 SIGNUPS_ALLOWED = "true"
 WEB_VAULT_ENABLED = "true"
